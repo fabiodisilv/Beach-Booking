@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/parking">
+	<Resource name="jdbc/parkingdb" driverClassName="com.mysql.jdbc.Driver" type="javax.sql.DataSource"
+		      factory="org.apache.tomcat.jdbc.pool.DataSourceFactory" 
+		      logAbandoned="true" maxActive="100" maxIdle="30" maxWait="50000"
+			  removeAbandoned="true" removeAbandonedTimeout="90" scope="Container"
+		      testWhileIdle="true" timeBetweenEvictionRunsMillis="50000"
+		      url="jdbc:mysql://localhost:3306/parking"
+		      username="parking" password="parking"  validationQuery="select 1" />
+</Context>
