@@ -14,17 +14,17 @@
 	
 		<xsd:schema targetNamespace="http://it.univaq.disim.sose.beachbooking/parking">
 
-			<xsd:element name="parkingRequest" type="tns:parkingRequest" />
-			<xsd:element name="parkingResponse" type="tns:parkingResponse" />
+			<xsd:element name="getNearParkingsRequest" type="tns:getNearParkingsRequest" />
+			<xsd:element name="getNearParkingsResponse" type="tns:getNearParkingsResponse" />
 
-			<xsd:complexType name="parkingRequest">
+			<xsd:complexType name="getNearParkingsRequest">
 				<xsd:sequence>
-					<xsd:element name="lat" type="xsd:double" />
-					<xsd:element name="lon" type="xsd:double" />
+					<xsd:element name="latitude" type="xsd:double" />
+					<xsd:element name="longitude" type="xsd:double" />
 				</xsd:sequence>
 			</xsd:complexType>
 
-			<xsd:complexType name="parkingResponse">
+			<xsd:complexType name="getNearParkingsResponse">
 				<xsd:sequence maxOccurs="unbounded" minOccurs="0">
 					<xsd:element name="parkings" type="tns:parkingType" />
 				</xsd:sequence>
@@ -32,8 +32,8 @@
 
 			<xsd:complexType name="parkingType">
 				<xsd:sequence>
-					<xsd:element name="lat" type="xsd:double" />
-					<xsd:element name="lon" type="xsd:double" />
+					<xsd:element name="latitude" type="xsd:double" />
+					<xsd:element name="longitude" type="xsd:double" />
 					<xsd:element name="name" minOccurs="0" type="xsd:string" />
 					<xsd:element name="capacity" minOccurs="0" type="xsd:int" />
 					<xsd:element name="price" minOccurs="0" type="xsd:double" />
@@ -44,30 +44,30 @@
 
 	</types>
 
-	<message name="parkingRequest">
-		<part name="parameters" element="tns:parkingRequest">
+	<message name="getNearParkingsRequest">
+		<part name="parameters" element="tns:getNearParkingsRequest">
 		</part>
 	</message>
 
-	<message name="parkingResponse">
-		<part name="parameters" element="tns:parkingResponse">
+	<message name="getNearParkingsResponse">
+		<part name="parameters" element="tns:getNearParkingsResponse">
 		</part>
 	</message>
 
 	<portType name="ParkingPT">
-		<operation name="parking">
-			<input message="tns:parkingRequest"
-				wsam:Action="http://it.univaq.disim.sose.beachbooking/parking/parkingRequest">
+		<operation name="getNearParkings">
+			<input message="tns:getNearParkingsRequest"
+				wsam:Action="http://it.univaq.disim.sose.beachbooking/parking/getNearParkingsRequest">
 			</input>
-			<output message="tns:parkingResponse"
-				wsam:Action="http://it.univaq.disim.sose.beachbooking/parking/parkingResponse">
+			<output message="tns:getNearParkingsResponse"
+				wsam:Action="http://it.univaq.disim.sose.beachbooking/parking/getNearParkingsResponse">
 			</output>
 		</operation>
 	</portType>
 
 	<binding name="ParkingBinding" type="tns:ParkingPT">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-		<operation name="parking">
+		<operation name="getNearParkings">
 			<soap:operation soapAction="" />
 			<input>
 				<soap:body use="literal" />

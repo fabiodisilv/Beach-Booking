@@ -1,4 +1,4 @@
-package it.univaq.disim.sose.beachbooking.parking.business.impl;
+package it.univaq.disim.sose.beachbooking.parking.business.impl.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
