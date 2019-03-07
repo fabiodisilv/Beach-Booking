@@ -1,8 +1,10 @@
 package it.univaq.disim.sose.beachbooking.beachbooking.business;
 
+import java.sql.Date;
 import java.util.List;
 
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Parking;
 
 public interface BeachBookingService {
@@ -11,4 +13,8 @@ public interface BeachBookingService {
 
 	List<Parking> getNearParkings(int zone) throws BusinessException;
 
+	Booking bookBeach(Long beachId, Date date) throws BusinessException;
+
+	Boolean deleteBooking(Long id) throws BusinessException;
+	
 }

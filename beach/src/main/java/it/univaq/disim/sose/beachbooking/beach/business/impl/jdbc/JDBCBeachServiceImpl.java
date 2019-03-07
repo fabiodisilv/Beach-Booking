@@ -89,26 +89,33 @@ public class JDBCBeachServiceImpl implements BeachService {
 	}
 
 	@Override
-	public Boolean bookBeach(Long beach_id, Date date) throws BusinessException {
+	public Long bookBeach(Long beach_id, Date date) throws BusinessException {
 		String query = "INSERT INTO booking (beach_id, date) VALUES(?, ?)";
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		int updateResult = 0;
+		ResultSet resultSet = null;
+		Long bookingId = 0L;
 
 		try {
 
 			connection = dataSource.getConnection();
 
-			preparedStatement = connection.prepareStatement(query);
+			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
 			preparedStatement.setLong(1, beach_id);
 			preparedStatement.setDate(2, date);
 
 			LOGGER.info("JDBCBeachServiceImpl - bookBeach: Inserting Booking");
 
-			updateResult = preparedStatement.executeUpdate();
+			preparedStatement.executeUpdate();
 
+			resultSet = preparedStatement.getGeneratedKeys();
+			
+			if (resultSet.next()) {
+			    bookingId = resultSet.getLong(1);
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 			LOGGER.error("JDBCBeachServiceImpl - getBeaches: " + e.getMessage());
@@ -130,7 +137,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 		}
 
-		return true;
+		return bookingId;
 
 	}
 

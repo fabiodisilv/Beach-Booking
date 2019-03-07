@@ -1,7 +1,5 @@
 package it.univaq.disim.sose.beachbooking.beach.business.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @SuppressWarnings("serial")
 public class Beach implements java.io.Serializable {
 

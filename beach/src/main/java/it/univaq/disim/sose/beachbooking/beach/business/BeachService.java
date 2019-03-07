@@ -9,7 +9,7 @@ public interface BeachService {
 	
 	List<Beach> getBeaches(String city) throws BusinessException;
 	
-	Boolean bookBeach(Long beach_id, Date date) throws BusinessException;
+	Long bookBeach(Long beach_id, Date date) throws BusinessException;
 
 	Boolean deleteBooking(Long id) throws BusinessException;
 }

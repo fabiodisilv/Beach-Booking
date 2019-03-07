@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 
 import it.univaq.disim.sose.beachbooking.beach.business.BeachService;
 import it.univaq.disim.sose.beachbooking.beach.business.model.Beach;
+import it.univaq.disim.sose.beachbooking.beach.business.model.Booking;
 
 @Controller("beachrestcontroller")
 public class RESTBeach {
@@ -39,10 +40,18 @@ public class RESTBeach {
 	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("bookbeach/{beach_id}/{date}")
-	public Boolean bookbeach(@PathParam("beach_id") Long beach_id, @PathParam("date") Date date) {
+	public Booking bookbeach(@PathParam("beach_id") Long beachId, @PathParam("date") Date date) {
 
 		LOGGER.info("CALLED bookbeach ON beachrestcontroller");
-		return service.bookBeach(beach_id, date);
+		
+		Booking booking = new Booking();
+		
+		booking.setBeachId(beachId);
+		booking.setDate(date);
+		booking.setCanceled(false);
+		booking.setId(service.bookBeach(beachId, date));
+		
+		return booking; 
 	}
 
 	@GET
@@ -52,6 +61,7 @@ public class RESTBeach {
 	public Boolean deletebooking(@PathParam("id") Long id) {
 
 		LOGGER.info("CALLED deletebooking ON beachrestcontroller");
+		
 		return service.deleteBooking(id);
 	}
 
