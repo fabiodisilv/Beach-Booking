@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @SuppressWarnings("serial")
 public class Beach implements java.io.Serializable {
 
-	@JsonIgnore
+	//@JsonIgnore
 	private Long id;
 	private String name;
 	private double price;

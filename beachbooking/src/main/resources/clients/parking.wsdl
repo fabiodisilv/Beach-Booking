@@ -19,8 +19,7 @@
 
 			<xsd:complexType name="getNearParkingsRequest">
 				<xsd:sequence>
-					<xsd:element name="latitude" type="xsd:double" />
-					<xsd:element name="longitude" type="xsd:double" />
+					<xsd:element name="zone" type="xsd:int" />
 				</xsd:sequence>
 			</xsd:complexType>
 
@@ -32,11 +31,11 @@
 
 			<xsd:complexType name="parkingType">
 				<xsd:sequence>
-					<xsd:element name="latitude" type="xsd:double" />
-					<xsd:element name="longitude" type="xsd:double" />
+					<xsd:element name="id" minOccurs="0" type="xsd:long" />
 					<xsd:element name="name" minOccurs="0" type="xsd:string" />
 					<xsd:element name="capacity" minOccurs="0" type="xsd:int" />
 					<xsd:element name="price" minOccurs="0" type="xsd:double" />
+					<xsd:element name="zone" minOccurs="0" type="xsd:int" />
 				</xsd:sequence>
 			</xsd:complexType>
 

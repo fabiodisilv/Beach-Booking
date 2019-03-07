@@ -1,5 +1,6 @@
 package it.univaq.disim.sose.beachbooking.beachbooking.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -14,23 +15,62 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import it.univaq.disim.sose.beachbooking.beachbooking.business.BeachBookingService;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.BeachInfoParking;
 
 @Controller("beachbookingrestcontroller")
 public class RESTBeachBooking {
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(RESTBeachBooking.class);
-	
+
 	@Autowired
 	private BeachBookingService service;
-	
-	/*@GET
+
+	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("/{city}")
-	public List<Beach> getbeaches(@PathParam("city") String city) {
+	@Path("getbeaches/{city}")
+	public List<BeachInfoParking> getbeaches(@PathParam("city") String city) {
 
 		LOGGER.info("CALLED getbeahes ON beachbookingrestcontroller");
-		return service.getBeaches(city);
-	}*/
+
+		List<BeachInfoParking> beachInfoParkings = new ArrayList<BeachInfoParking>();
+
+		List<Beach> beaches = service.getBeaches(city);
+
+		for (Beach beach : beaches) {
+
+			BeachInfoParking beachInfoParking = new BeachInfoParking();
+
+			beachInfoParking.setId(beach.getId());
+			beachInfoParking.setName(beach.getName());
+			beachInfoParking.setPrice(beach.getPrice());
+			beachInfoParking.setRating(beach.getRating());
+			beachInfoParking.setCity(beach.getCity());
+			beachInfoParking.setZone(beach.getZone());
+
+			beachInfoParking.setNearParkings(service.getNearParkings(beach.getZone()));
+
+			beachInfoParkings.add(beachInfoParking);
+
+		}
+
+		return beachInfoParkings;
+
+	}
+
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("bookbeach/{id}")
+	public Long bookbeach(@PathParam("id") Long id) {
+
+		LOGGER.info("CALLED bookbeach ON beachbookingrestcontroller");
+
+		
+		
+		return null;
+
+	}
 	
 }

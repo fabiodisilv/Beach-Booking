@@ -19,6 +19,7 @@ import it.univaq.disim.sose.beachbooking.beach.business.model.Beach;
 
 @Controller("beachrestcontroller")
 public class RESTBeach {
+
 	private static Logger LOGGER = LoggerFactory.getLogger(RESTBeach.class);
 
 	@Autowired

@@ -37,6 +37,7 @@ public class ParkingPTImpl implements ParkingPT {
 
 				ParkingType parkingType = new ParkingType();
 
+				parkingType.setId(parking.getId());
 				parkingType.setName(parking.getName());
 				parkingType.setCapacity(parking.getCapacity());
 				parkingType.setPrice(parking.getPrice());

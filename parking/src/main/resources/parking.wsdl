@@ -31,6 +31,7 @@
 
 			<xsd:complexType name="parkingType">
 				<xsd:sequence>
+					<xsd:element name="id" minOccurs="0" type="xsd:long" />
 					<xsd:element name="name" minOccurs="0" type="xsd:string" />
 					<xsd:element name="capacity" minOccurs="0" type="xsd:int" />
 					<xsd:element name="price" minOccurs="0" type="xsd:double" />
