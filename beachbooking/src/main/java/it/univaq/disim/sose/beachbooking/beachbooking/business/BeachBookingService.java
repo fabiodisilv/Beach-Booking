@@ -6,6 +6,7 @@ import java.util.List;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Parking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
 
 public interface BeachBookingService {
 
@@ -16,5 +17,7 @@ public interface BeachBookingService {
 	Booking bookBeach(Long beachId, Date date) throws BusinessException;
 
 	Boolean deleteBooking(Long id) throws BusinessException;
+	
+	Forecast getForecast(String city) throws BusinessException;
 	
 }

@@ -20,6 +20,8 @@ import it.univaq.disim.sose.beachbooking.beachbooking.business.BusinessException
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Parking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.location.Location;
 import it.univaq.disim.sose.beachbooking.clients.beachbooking.GetNearParkingsRequest;
 import it.univaq.disim.sose.beachbooking.clients.beachbooking.GetNearParkingsResponse;
 import it.univaq.disim.sose.beachbooking.clients.beachbooking.ParkingPT;
@@ -37,6 +39,15 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 
 	@Value("#{cfg.deletebookingurl}")
 	private String deletebookingurl;
+
+	@Value("#{cfg.getforecasturl}")
+	private String getforecasturl;
+
+	@Value("#{cfg.getlocationkeyurl}")
+	private String getlocationkeyurl;
+
+	@Value("#{cfg.accuweatherkey}")
+	private String accuweatherkey;
 
 	@Override
 	public List<Beach> getBeaches(String city) throws BusinessException {
@@ -98,16 +109,35 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 
 	@Override
 	public Boolean deleteBooking(Long id) throws BusinessException {
-		
+
 		final String mediaType = MediaType.APPLICATION_JSON;
 
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(deletebookingurl);
-		Boolean deleteResult = target.resolveTemplate("id", id).request(mediaType)
-				.get(new GenericType<Boolean>() {
-				});
+		Boolean deleteResult = target.resolveTemplate("id", id).request(mediaType).get(new GenericType<Boolean>() {
+		});
 
 		return deleteResult;
+	}
+
+	@Override
+	public Forecast getForecast(String city) throws BusinessException {
+		final String mediaType = MediaType.APPLICATION_JSON;
+
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(getlocationkeyurl);
+
+		List<Location> locations = target.resolveTemplate("accuweatherkey", accuweatherkey).resolveTemplate("city", city)
+				.request(mediaType).get(new GenericType<List<Location>>() {
+				});
+
+		target = client.target(getforecasturl);
+		Forecast forecast = target.resolveTemplate("accuweatherkey", accuweatherkey)
+				.resolveTemplate("citykey", "211845").request(mediaType).get(new GenericType<Forecast>() {
+				});
+
+		return forecast;
+
 	}
 
 }

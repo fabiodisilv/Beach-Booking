@@ -19,6 +19,7 @@ import it.univaq.disim.sose.beachbooking.beachbooking.business.BeachBookingServi
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.BeachInfoParking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
 
 @Controller("beachbookingrestcontroller")
 public class RESTBeachBooking {
@@ -82,6 +83,18 @@ public class RESTBeachBooking {
 		LOGGER.info("CALLED deletebooking ON beachbookingrestcontroller");
 
 		return service.deleteBooking(id);
+
+	}
+
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("getforecast/{city}")
+	public Forecast getforecast(@PathParam("city") String city) {
+
+		LOGGER.info("CALLED getforecast ON beachbookingrestcontroller");
+
+		return service.getForecast(city);
 
 	}
 	
