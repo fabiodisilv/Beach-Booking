@@ -27,9 +27,9 @@ public class JDBCParkingServiceImpl implements ParkingService {
 	private DataSource dataSource;
 
 	@Override
-	public List<Parking> getNearParkings(Double latitude, Double longitude) throws BusinessException {
+	public List<Parking> getNearParkings(int zone) throws BusinessException {
 
-		String query = "SELECT id, name, latitude, longitude, capacity, price FROM parkings_bookbooking";
+		String query = "SELECT id, name, capacity, price, zone FROM parkings WHERE zone = ?";
 
 		List<Parking> parkings = new ArrayList<Parking>();
 		Connection connection = null;
@@ -42,7 +42,7 @@ public class JDBCParkingServiceImpl implements ParkingService {
 
 			preparedStatement = connection.prepareStatement(query);
 
-			// preparedStatement.setString(1, city);
+			preparedStatement.setInt(1, zone);
 
 			resultSet = preparedStatement.executeQuery();
 
@@ -54,11 +54,10 @@ public class JDBCParkingServiceImpl implements ParkingService {
 
 				parking.setId(resultSet.getLong("id"));
 				parking.setName(resultSet.getString("name"));
-				parking.setLatitude(resultSet.getDouble("latitude"));
-				parking.setLongitude(resultSet.getDouble("longitude"));
 				parking.setCapacity(resultSet.getInt("capacity"));
 				parking.setPrice(resultSet.getDouble("price"));
-
+				parking.setZone(resultSet.getInt("zone"));
+				
 				parkings.add(parking);
 			}
 

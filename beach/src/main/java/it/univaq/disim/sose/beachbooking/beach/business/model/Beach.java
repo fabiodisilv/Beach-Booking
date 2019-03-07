@@ -8,11 +8,10 @@ public class Beach implements java.io.Serializable {
 	@JsonIgnore
 	private Long id;
 	private String name;
-	private double latitude;
-	private double longitude;
 	private double price;
 	private int rating;
 	private String city;
+	private int zone;
 
 	public Long getId() {
 		return id;
@@ -28,22 +27,6 @@ public class Beach implements java.io.Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
 	}
 
 	public double getPrice() {
@@ -68,6 +51,14 @@ public class Beach implements java.io.Serializable {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public int getZone() {
+		return zone;
+	}
+
+	public void setZone(int zone) {
+		this.zone = zone;
 	}
 
 }

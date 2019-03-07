@@ -27,20 +27,17 @@ public class RESTBeach {
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("/{city}")
+	@Path("getbeaches/{city}")
 	public List<Beach> getbeaches(@PathParam("city") String city) {
 
-		LOGGER.info("CALLED getbeahes ON beachrestcontroller");
+		LOGGER.info("CALLED getbeaches ON beachrestcontroller");
 		return service.getBeaches(city);
 	}
 
 	@GET
-
 	@Consumes("application/json")
-
 	@Produces("application/json")
-
-	@Path("/{beach_id}/{date}")
+	@Path("bookbeach/{beach_id}/{date}")
 	public Boolean bookbeach(@PathParam("beach_id") Long beach_id, @PathParam("date") Date date) {
 
 		LOGGER.info("CALLED bookbeach ON beachrestcontroller");
@@ -48,12 +45,9 @@ public class RESTBeach {
 	}
 
 	@GET
-
 	@Consumes("application/json")
-
 	@Produces("application/json")
-
-	@Path("/{id}")
+	@Path("deletebooking/{id}")
 	public Boolean deletebooking(@PathParam("id") Long id) {
 
 		LOGGER.info("CALLED deletebooking ON beachrestcontroller");

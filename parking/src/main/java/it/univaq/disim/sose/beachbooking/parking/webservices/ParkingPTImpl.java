@@ -29,7 +29,7 @@ public class ParkingPTImpl implements ParkingPT {
 
 		try {
 
-			List<Parking> parkings = service.getNearParkings(parameters.getLatitude(), parameters.getLongitude());
+			List<Parking> parkings = service.getNearParkings(parameters.getZone());
 
 			GetNearParkingsResponse response = new GetNearParkingsResponse();
 
@@ -38,10 +38,9 @@ public class ParkingPTImpl implements ParkingPT {
 				ParkingType parkingType = new ParkingType();
 
 				parkingType.setName(parking.getName());
-				parkingType.setLatitude(parking.getLatitude());
-				parkingType.setLongitude(parking.getLongitude());
 				parkingType.setCapacity(parking.getCapacity());
 				parkingType.setPrice(parking.getPrice());
+				parkingType.setZone(parking.getZone());
 
 				response.getParkings().add(parkingType);
 			}

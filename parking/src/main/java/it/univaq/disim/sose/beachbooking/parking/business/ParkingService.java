@@ -5,7 +5,7 @@ import java.util.List;
 import it.univaq.disim.sose.beachbooking.parking.business.model.Parking;
 
 public interface ParkingService {
-	
-	List<Parking> getNearParkings(Double latitude, Double longitude) throws BusinessException;
+
+	List<Parking> getNearParkings(int zone) throws BusinessException;
 
 }

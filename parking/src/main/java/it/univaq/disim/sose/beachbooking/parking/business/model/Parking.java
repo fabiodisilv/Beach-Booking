@@ -4,10 +4,9 @@ public class Parking {
 
 	private Long id;
 	private String name;
-	private double latitude;
-	private double longitude;
 	private int capacity;
 	private double price;
+	private int zone;
 
 	public Long getId() {
 		return id;
@@ -25,22 +24,6 @@ public class Parking {
 		this.name = name;
 	}
 
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-
 	public int getCapacity() {
 		return capacity;
 	}
@@ -55,6 +38,14 @@ public class Parking {
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	public int getZone() {
+		return zone;
+	}
+
+	public void setZone(int zone) {
+		this.zone = zone;
 	}
 
 }

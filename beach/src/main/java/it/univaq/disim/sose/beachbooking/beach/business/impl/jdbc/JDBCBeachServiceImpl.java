@@ -30,7 +30,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 	@Override
 	public List<Beach> getBeaches(String city) throws BusinessException {
-		String query = "SELECT id, name, latitude, longitude, price, rating, city FROM beach WHERE city = ? ";
+		String query = "SELECT id, name, price, rating, city, zone FROM beach WHERE city = ? ";
 
 		List<Beach> beaches = new ArrayList<Beach>();
 		Connection connection = null;
@@ -55,11 +55,10 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 				beach.setId(resultSet.getLong("id"));
 				beach.setName(resultSet.getString("name"));
-				beach.setLatitude(resultSet.getDouble("latitude"));
-				beach.setLongitude(resultSet.getDouble("longitude"));
 				beach.setPrice(resultSet.getDouble("price"));
 				beach.setRating(resultSet.getInt("rating"));
 				beach.setCity(resultSet.getString("city"));
+				beach.setZone(resultSet.getInt("zone"));
 
 				beaches.add(beach);
 			}
