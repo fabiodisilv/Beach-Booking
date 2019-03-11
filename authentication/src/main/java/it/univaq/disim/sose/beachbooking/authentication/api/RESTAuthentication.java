@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import it.univaq.disim.sose.beachbooking.authentication.business.AuthenticationService;
-import it.univaq.disim.sose.beachbooking.authentication.business.model.User;
+
 
 @Controller("authenticationrestcontroller")
 public class RESTAuthentication {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/beach">
+<Context antiJARLocking="true" path="/authentication">
 	<Resource name="jdbc/authenticationdb"
 		driverClassName="com.mysql.jdbc.Driver" type="javax.sql.DataSource"
 		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"

@@ -1,13 +1,9 @@
 package it.univaq.disim.sose.beachbooking.authentication.business.impl.jdbc;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -124,19 +120,19 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 			if (!passwordDB.equals(password)) {
 				return "Error - Wrong password";
 			}
-			
-			
+
 			resultSet.close();
 			preparedStatement.close();
-			
-			query = "INSERT INTO authenticated_user (username, key) VALUES (?,?)";
-			
+
+			query = "INSERT INTO authenticated_users(username, `key`) VALUES (?,?)";
+
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, username);
+			
+			key = generateKey();
 			preparedStatement.setString(2, key);
-			
+
 			preparedStatement.executeUpdate();
-			
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -165,14 +161,98 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 	@Override
 	public Boolean logout(String key) throws BusinessException {
-		// TODO Auto-generated method stub
-		return null;
+		String query = "DELETE FROM authenticated_users WHERE `key` = ?";
+
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+
+			connection = dataSource.getConnection();
+
+			preparedStatement = connection.prepareStatement(query);
+
+			preparedStatement.setString(1, key);
+
+			LOGGER.info("JDBCBeachServiceImpl - logout: Executing query");
+
+			preparedStatement.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			LOGGER.error("JDBCAuthenticationImpl - logout: " + e.getMessage());
+
+			throw new BusinessException(e);
+		} finally {
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+
+		}
+
+		return true;
+
 	}
 
 	@Override
 	public Boolean checkKey(String key) throws BusinessException {
-		// TODO Auto-generated method stub
-		return null;
+		String query = "SELECT username FROM authenticated_users WHERE `key` = ? ";
+
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+
+		try {
+
+			connection = dataSource.getConnection();
+
+			preparedStatement = connection.prepareStatement(query);
+
+			preparedStatement.setString(1, key);
+
+			resultSet = preparedStatement.executeQuery();
+
+			LOGGER.info("JDBCBeachServiceImpl - login: Executing query");
+
+			if (resultSet.next()) {
+				
+				return true;
+				
+			} else {
+				
+				return false;
+				
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			LOGGER.error("JDBCAuthenticationImpl - getBeaches: " + e.getMessage());
+
+			throw new BusinessException(e);
+		} finally {
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
 	}
 
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

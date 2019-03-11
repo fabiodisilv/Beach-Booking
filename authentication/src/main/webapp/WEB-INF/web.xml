@@ -14,8 +14,8 @@
     </context-param>
 
 	<servlet>
-		<display-name>beach</display-name>
-		<servlet-name>beach</servlet-name>
+		<display-name>authentication</display-name>
+		<servlet-name>authentication</servlet-name>
 		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
 		<init-param>
 			<param-name>config-location</param-name>
