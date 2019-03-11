@@ -1,6 +1,6 @@
 package it.univaq.disim.sose.beachbooking.beachbooking.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class Beach implements java.io.Serializable {
@@ -11,6 +11,15 @@ public class Beach implements java.io.Serializable {
 	private int rating;
 	private String city;
 	private int zone;
+	private List<Parking> nearParkings;
+
+	public List<Parking> getNearParkings() {
+		return nearParkings;
+	}
+
+	public void setNearParkings(List<Parking> nearParkings) {
+		this.nearParkings = nearParkings;
+	}
 
 	public Long getId() {
 		return id;

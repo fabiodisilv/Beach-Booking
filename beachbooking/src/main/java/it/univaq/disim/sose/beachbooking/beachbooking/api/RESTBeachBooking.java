@@ -3,6 +3,11 @@ package it.univaq.disim.sose.beachbooking.beachbooking.api;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,7 +22,7 @@ import org.springframework.stereotype.Controller;
 
 import it.univaq.disim.sose.beachbooking.beachbooking.business.BeachBookingService;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
-import it.univaq.disim.sose.beachbooking.beachbooking.model.BeachInfoParking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.BeachParkingWeather;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
 
@@ -33,32 +38,65 @@ public class RESTBeachBooking {
 	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("getbeaches/{city}")
-	public List<BeachInfoParking> getbeaches(@PathParam("city") String city) {
+	public BeachParkingWeather getbeaches(@PathParam("city") String city) {
 
 		LOGGER.info("CALLED getbeahes ON beachbookingrestcontroller");
 
-		List<BeachInfoParking> beachInfoParkings = new ArrayList<BeachInfoParking>();
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		
+		Callable<List<Beach>> callableBeach = new Callable<List<Beach>>() {
+			@Override
+			public List<Beach> call() {
+				return service.getBeaches(city);
+			}
+		};
 
-		List<Beach> beaches = service.getBeaches(city);
+		Callable<Forecast> callableWeather = new Callable<Forecast>() {
+			@Override
+			public Forecast call() {
+				return service.getForecast(city);
+			}
+		};
+
+		Future<List<Beach>> futureBeach = executor.submit(callableBeach);
+		Future<Forecast> futureWeather = executor.submit(callableWeather);
+
+		List<Beach> beaches = null;
+		Forecast forecast = null;
+		
+		try {
+			
+			beaches = futureBeach.get();
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+		executor.shutdown();
+
+		BeachParkingWeather beachParkingWeathers = new BeachParkingWeather();
 
 		for (Beach beach : beaches) {
 
-			BeachInfoParking beachInfoParking = new BeachInfoParking();
-
-			beachInfoParking.setId(beach.getId());
-			beachInfoParking.setName(beach.getName());
-			beachInfoParking.setPrice(beach.getPrice());
-			beachInfoParking.setRating(beach.getRating());
-			beachInfoParking.setCity(beach.getCity());
-			beachInfoParking.setZone(beach.getZone());
-
-			beachInfoParking.setNearParkings(service.getNearParkings(beach.getZone()));
-
-			beachInfoParkings.add(beachInfoParking);
+			beach.setNearParkings(service.getNearParkings(beach.getZone()));
 
 		}
 
-		return beachInfoParkings;
+		try {
+			
+			forecast = futureWeather.get();
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+		
+		beachParkingWeathers.setBeaches(beaches);
+		beachParkingWeathers.setForecast(forecast);
+
+		return beachParkingWeathers;
 
 	}
 
@@ -66,14 +104,14 @@ public class RESTBeachBooking {
 	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("bookbeach/{id}/{date}")
-	public Booking bookbeach(@PathParam("id") Long id, @PathParam("date") Date date ) {
+	public Booking bookbeach(@PathParam("id") Long id, @PathParam("date") Date date) {
 
 		LOGGER.info("CALLED bookbeach ON beachbookingrestcontroller");
 
 		return service.bookBeach(id, date);
 
 	}
-	
+
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
@@ -97,5 +135,5 @@ public class RESTBeachBooking {
 		return service.getForecast(city);
 
 	}
-	
+
 }
