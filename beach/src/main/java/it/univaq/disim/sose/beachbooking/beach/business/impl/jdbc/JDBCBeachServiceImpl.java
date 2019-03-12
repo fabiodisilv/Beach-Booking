@@ -89,8 +89,8 @@ public class JDBCBeachServiceImpl implements BeachService {
 	}
 
 	@Override
-	public Long bookBeach(Long beach_id, Date date) throws BusinessException {
-		String query = "INSERT INTO booking (beach_id, date) VALUES(?, ?)";
+	public Long bookBeach(Long beach_id, Date date, String username) throws BusinessException {
+		String query = "INSERT INTO booking (beach_id, date, username) VALUES(?, ?, ?)";
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -105,20 +105,21 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 			preparedStatement.setLong(1, beach_id);
 			preparedStatement.setDate(2, date);
+			preparedStatement.setString(3, username);
 
 			LOGGER.info("JDBCBeachServiceImpl - bookBeach: Inserting Booking");
 
 			preparedStatement.executeUpdate();
 
 			resultSet = preparedStatement.getGeneratedKeys();
-			
+
 			if (resultSet.next()) {
-			    bookingId = resultSet.getLong(1);
+				bookingId = resultSet.getLong(1);
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
-			LOGGER.error("JDBCBeachServiceImpl - getBeaches: " + e.getMessage());
+			LOGGER.error("JDBCBeachServiceImpl - bookBeach: " + e.getMessage());
 
 			throw new BusinessException(e);
 		} finally {
@@ -148,7 +149,6 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		int updateResult = 0;
 
 		try {
 
@@ -160,7 +160,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 			LOGGER.info("JDBCBeachServiceImpl - bookBeach: Deleting Booking");
 
-			updateResult = preparedStatement.executeUpdate();
+			preparedStatement.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();

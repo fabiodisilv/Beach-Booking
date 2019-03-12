@@ -6,12 +6,9 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +45,21 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 
 	@Value("#{cfg.accuweatherkey}")
 	private String accuweatherkey;
+
+	@Value("#{cfg.register}")
+	private String register;
+
+	@Value("#{cfg.login}")
+	private String login;
+
+	@Value("#{cfg.logout}")
+	private String logout;
+
+	@Value("#{cfg.checkkey}")
+	private String checkkey;
+
+	@Value("#{cfg.getlistofbooking}")
+	private String getlistofbooking;
 
 	@Override
 	public List<Beach> getBeaches(String city) throws BusinessException {
@@ -93,14 +105,14 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 	}
 
 	@Override
-	public Booking bookBeach(Long beachId, Date date) throws BusinessException {
+	public Booking bookBeach(Long beachId, Date date, String username) throws BusinessException {
 
 		final String mediaType = MediaType.APPLICATION_JSON;
 
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(bookbeachurl);
-		Booking booking = target.resolveTemplate("id", beachId).resolveTemplate("date", date).request(mediaType)
-				.get(new GenericType<Booking>() {
+		Booking booking = target.resolveTemplate("id", beachId).resolveTemplate("date", date)
+				.resolveTemplate("username", username).request(mediaType).get(new GenericType<Booking>() {
 				});
 
 		return booking;
@@ -127,17 +139,81 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(getlocationkeyurl);
 
-		List<Location> locations = target.resolveTemplate("accuweatherkey", accuweatherkey).resolveTemplate("city", city)
-				.request(mediaType).get(new GenericType<List<Location>>() {
+		List<Location> locations = target.resolveTemplate("accuweatherkey", accuweatherkey)
+				.resolveTemplate("city", city).request(mediaType).get(new GenericType<List<Location>>() {
 				});
 
 		target = client.target(getforecasturl);
 		Forecast forecast = target.resolveTemplate("accuweatherkey", accuweatherkey)
-				.resolveTemplate("citykey", "211845").request(mediaType).get(new GenericType<Forecast>() {
+				.resolveTemplate("citykey", locations.get(0).getKey()).request(mediaType)
+				.get(new GenericType<Forecast>() {
 				});
 
 		return forecast;
 
+	}
+
+	@Override
+	public String register(String username, String password) throws BusinessException {
+		final String mediaType = MediaType.APPLICATION_JSON;
+
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(register);
+		String result = target.resolveTemplate("username", username).resolveTemplate("password", password)
+				.request(mediaType).get(new GenericType<String>() {
+				});
+
+		return result;
+	}
+
+	@Override
+	public String login(String username, String password) throws BusinessException {
+		final String mediaType = MediaType.APPLICATION_JSON;
+
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(login);
+		String key = target.resolveTemplate("username", username).resolveTemplate("password", password)
+				.request(mediaType).get(new GenericType<String>() {
+				});
+
+		return key;
+	}
+
+	@Override
+	public Boolean logout(String key) throws BusinessException {
+		final String mediaType = MediaType.APPLICATION_JSON;
+
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(logout);
+		Boolean result = target.resolveTemplate("key", key).request(mediaType).get(new GenericType<Boolean>() {
+		});
+
+		return result;
+	}
+
+	@Override
+	public Boolean checkKey(String key) throws BusinessException {
+		final String mediaType = MediaType.APPLICATION_JSON;
+
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(checkkey);
+		Boolean result = target.resolveTemplate("key", key).request(mediaType).get(new GenericType<Boolean>() {
+		});
+
+		return result;
+	}
+
+	@Override
+	public List<Booking> getListOfBooking(String username) throws BusinessException {
+		final String mediaType = MediaType.APPLICATION_JSON;
+
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(getlistofbooking);
+		List<Booking> bookings = target.resolveTemplate("username", username).request(mediaType)
+				.get(new GenericType<List<Booking>>() {
+				});
+
+		return bookings;
 	}
 
 }

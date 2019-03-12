@@ -39,19 +39,21 @@ public class RESTBeach {
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("bookbeach/{beach_id}/{date}")
-	public Booking bookbeach(@PathParam("beach_id") Long beachId, @PathParam("date") Date date) {
+	@Path("bookbeach/{beach_id}/{date}/{username}")
+	public Booking bookbeach(@PathParam("beach_id") Long beachId, @PathParam("date") Date date,
+			@PathParam("username") String username) {
 
 		LOGGER.info("CALLED bookbeach ON beachrestcontroller");
-		
+
 		Booking booking = new Booking();
-		
+
 		booking.setBeachId(beachId);
 		booking.setDate(date);
+		booking.setUsername(username);
 		booking.setCanceled(false);
-		booking.setId(service.bookBeach(beachId, date));
-		
-		return booking; 
+		booking.setId(service.bookBeach(beachId, date, username));
+
+		return booking;
 	}
 
 	@GET
@@ -61,7 +63,7 @@ public class RESTBeach {
 	public Boolean deletebooking(@PathParam("id") Long id) {
 
 		LOGGER.info("CALLED deletebooking ON beachrestcontroller");
-		
+
 		return service.deleteBooking(id);
 	}
 

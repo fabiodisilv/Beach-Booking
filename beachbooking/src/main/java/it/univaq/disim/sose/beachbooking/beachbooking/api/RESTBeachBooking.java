@@ -1,7 +1,6 @@
 package it.univaq.disim.sose.beachbooking.beachbooking.api;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -37,103 +36,196 @@ public class RESTBeachBooking {
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("getbeaches/{city}")
-	public BeachParkingWeather getbeaches(@PathParam("city") String city) {
+	@Path("getbeaches/{key}/{city}")
+	public BeachParkingWeather getbeaches(@PathParam("key") String key, @PathParam("city") String city) {
 
 		LOGGER.info("CALLED getbeahes ON beachbookingrestcontroller");
 
-		ExecutorService executor = Executors.newFixedThreadPool(2);
-		
-		Callable<List<Beach>> callableBeach = new Callable<List<Beach>>() {
-			@Override
-			public List<Beach> call() {
-				return service.getBeaches(city);
+		Boolean validKey = service.checkKey(key);
+
+		if (validKey) {
+
+			ExecutorService executor = Executors.newFixedThreadPool(2);
+
+			Callable<List<Beach>> callableBeach = new Callable<List<Beach>>() {
+				@Override
+				public List<Beach> call() {
+					return service.getBeaches(city);
+				}
+			};
+
+			Callable<Forecast> callableWeather = new Callable<Forecast>() {
+				@Override
+				public Forecast call() {
+					return service.getForecast(city);
+				}
+			};
+
+			Future<List<Beach>> futureBeach = executor.submit(callableBeach);
+			Future<Forecast> futureWeather = executor.submit(callableWeather);
+
+			List<Beach> beaches = null;
+			Forecast forecast = null;
+
+			try {
+
+				beaches = futureBeach.get();
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
 			}
-		};
+			executor.shutdown();
 
-		Callable<Forecast> callableWeather = new Callable<Forecast>() {
-			@Override
-			public Forecast call() {
-				return service.getForecast(city);
+			BeachParkingWeather beachParkingWeathers = new BeachParkingWeather();
+
+			for (Beach beach : beaches) {
+
+				beach.setNearParkings(service.getNearParkings(beach.getZone()));
+
 			}
-		};
 
-		Future<List<Beach>> futureBeach = executor.submit(callableBeach);
-		Future<Forecast> futureWeather = executor.submit(callableWeather);
+			try {
 
-		List<Beach> beaches = null;
-		Forecast forecast = null;
-		
-		try {
-			
-			beaches = futureBeach.get();
-			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-		executor.shutdown();
+				forecast = futureWeather.get();
 
-		BeachParkingWeather beachParkingWeathers = new BeachParkingWeather();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
 
-		for (Beach beach : beaches) {
+			beachParkingWeathers.setBeaches(beaches);
+			beachParkingWeathers.setForecast(forecast);
 
-			beach.setNearParkings(service.getNearParkings(beach.getZone()));
+			return beachParkingWeathers;
+
+		} else {
+
+			return null;
 
 		}
-
-		try {
-			
-			forecast = futureWeather.get();
-			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-		
-		beachParkingWeathers.setBeaches(beaches);
-		beachParkingWeathers.setForecast(forecast);
-
-		return beachParkingWeathers;
-
 	}
 
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("bookbeach/{id}/{date}")
-	public Booking bookbeach(@PathParam("id") Long id, @PathParam("date") Date date) {
+	@Path("bookbeach/{key}/{id}/{date}/{username}")
+	public Booking bookbeach(@PathParam("key") String key, @PathParam("id") Long id, @PathParam("date") Date date,
+			@PathParam("username") String username) {
 
 		LOGGER.info("CALLED bookbeach ON beachbookingrestcontroller");
 
-		return service.bookBeach(id, date);
+		Boolean validKey = service.checkKey(key);
 
+		if (validKey) {
+
+			return service.bookBeach(id, date, username);
+
+		} else {
+
+			return null;
+
+		}
 	}
+	
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("getlistofbooking/{key}/{username}")
+	public List<Booking> getlistofbooking(@PathParam("key") String key, @PathParam("username") String username) {
+
+		LOGGER.info("CALLED getlistofbooking ON beachbookingrestcontroller");
+
+		Boolean validKey = service.checkKey(key);
+
+		if (validKey) {
+
+			return service.getListOfBooking(username);
+
+		} else {
+
+			return null;
+
+		}
+	}
+
 
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("deletebooking/{id}")
-	public boolean deletebooking(@PathParam("id") Long id) {
+	@Path("deletebooking/{key}/{id}")
+	public Boolean deletebooking(@PathParam("key") String key, @PathParam("id") Long id) {
 
 		LOGGER.info("CALLED deletebooking ON beachbookingrestcontroller");
 
-		return service.deleteBooking(id);
+		Boolean validKey = service.checkKey(key);
+
+		if (validKey) {
+
+			return service.deleteBooking(id);
+
+		} else {
+
+			return null;
+
+		}
+	}
+
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("getforecast/{key}/{city}")
+	public Forecast getforecast(@PathParam("key") String key, @PathParam("city") String city) {
+
+		LOGGER.info("CALLED getforecast ON beachbookingrestcontroller");
+
+		Boolean validKey = service.checkKey(key);
+
+		if (validKey) {
+
+			return service.getForecast(city);
+
+		} else {
+
+			return null;
+
+		}
+	}
+
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("register/{username}/{password}")
+	public String register(@PathParam("username") String username, @PathParam("password") String password) {
+
+		LOGGER.info("CALLED register ON beachbookingrestcontroller");
+
+		return service.register(username, password);
 
 	}
 
 	@GET
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("getforecast/{city}")
-	public Forecast getforecast(@PathParam("city") String city) {
+	@Path("login/{username}/{password}")
+	public String login(@PathParam("username") String username, @PathParam("password") String password) {
 
-		LOGGER.info("CALLED getforecast ON beachbookingrestcontroller");
+		LOGGER.info("CALLED login ON beachbookingrestcontroller");
 
-		return service.getForecast(city);
+		return service.login(username, password);
 
 	}
 
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("logout/{key}")
+	public Boolean logout(@PathParam("key") String key) {
+
+		LOGGER.info("CALLED logout ON beachbookingrestcontroller");
+
+		return service.logout(key);
+	}
 }
