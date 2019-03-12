@@ -67,4 +67,16 @@ public class RESTBeach {
 		return service.deleteBooking(id);
 	}
 
+	@GET
+	@Consumes("application/json")
+	@Produces("application/json")
+	@Path("getlistofbooking/{username}")
+	public List<Booking> getlistofbooking(@PathParam("username") String username) {
+
+		LOGGER.info("CALLED bookbeach ON beachrestcontroller");
+
+		return service.getListOfBooking(username);
+
+	}
+
 }

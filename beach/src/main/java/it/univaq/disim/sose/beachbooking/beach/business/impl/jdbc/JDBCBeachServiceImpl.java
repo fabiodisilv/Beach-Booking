@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import it.univaq.disim.sose.beachbooking.beach.business.BeachService;
 import it.univaq.disim.sose.beachbooking.beach.business.BusinessException;
 import it.univaq.disim.sose.beachbooking.beach.business.model.Beach;
+import it.univaq.disim.sose.beachbooking.beach.business.model.Booking;
 
 @Service
 public class JDBCBeachServiceImpl implements BeachService {
@@ -185,6 +186,65 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 		return true;
 
+	}
+
+	@Override
+	public List<Booking> getListOfBooking(String username) throws BusinessException {
+		String query = "SELECT id, beach_id, date, canceled, username FROM booking WHERE username = ? ";
+
+		List<Booking> bookings = new ArrayList<Booking>();
+		
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+
+		try {
+
+			connection = dataSource.getConnection();
+
+			preparedStatement = connection.prepareStatement(query);
+
+			preparedStatement.setString(1, username);
+
+			resultSet = preparedStatement.executeQuery();
+
+			LOGGER.info("JDBCBeachServiceImpl - getListOfBooking: Executing query");
+
+			while (resultSet.next()) {
+
+				Booking booking = new Booking();
+				
+				booking.setId(resultSet.getLong("id"));
+				booking.setBeachId(resultSet.getLong("beach_id"));
+				booking.setDate(resultSet.getDate("date"));
+				booking.setCanceled(resultSet.getBoolean("canceled"));
+				booking.setUsername(resultSet.getString("username"));
+				
+				bookings.add(booking);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			LOGGER.error("JDBCBeachServiceImpl - getListOfBooking: " + e.getMessage());
+
+			throw new BusinessException(e);
+		} finally {
+			if (preparedStatement != null) {
+				try {
+					preparedStatement.close();
+				} catch (SQLException e) {
+				}
+			}
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+				}
+			}
+
+		}
+
+		return bookings;
 	}
 
 }

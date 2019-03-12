@@ -9,6 +9,7 @@ public class Booking {
 	private Long beachId;
 	private Date date;
 	private Boolean canceled;
+	private String username;
 
 	public Long getId() {
 		return id;
@@ -40,6 +41,14 @@ public class Booking {
 
 	public void setCanceled(Boolean canceled) {
 		this.canceled = canceled;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 import it.univaq.disim.sose.beachbooking.beach.business.model.Beach;
+import it.univaq.disim.sose.beachbooking.beach.business.model.Booking;
 
 public interface BeachService {
 	
@@ -12,4 +13,6 @@ public interface BeachService {
 	Long bookBeach(Long beach_id, Date date, String username) throws BusinessException;
 
 	Boolean deleteBooking(Long id) throws BusinessException;
+	
+	List<Booking> getListOfBooking(String username) throws BusinessException;
 }
