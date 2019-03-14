@@ -28,37 +28,40 @@ import it.univaq.disim.sose.beachbooking.clients.beachbooking.ParkingType;
 @Service
 public class BeachBookingServiceImpl implements BeachBookingService, java.io.Serializable {
 
-	@Value("#{cfg.getbeachesurl}")
+	@Value("#{cfg.proxyurl}")
+	private String proxyUrl;
+	
+	@Value("#{cfg.proxyurl + cfg.getbeachesurl}")
 	private String getbeachurl;
 
-	@Value("#{cfg.bookbeachurl}")
+	@Value("#{cfg.proxyurl + cfg.bookbeachurl}")
 	private String bookbeachurl;
 
-	@Value("#{cfg.deletebookingurl}")
+	@Value("#{cfg.proxyurl + cfg.deletebookingurl}")
 	private String deletebookingurl;
 
-	@Value("#{cfg.getforecasturl}")
+	@Value("#{cfg.proxyurl + cfg.getforecasturl}")
 	private String getforecasturl;
 
-	@Value("#{cfg.getlocationkeyurl}")
+	@Value("#{cfg.proxyurl + cfg.getlocationkeyurl}")
 	private String getlocationkeyurl;
 
-	@Value("#{cfg.accuweatherkey}")
+	@Value("#{cfg.proxyurl + cfg.accuweatherkey}")
 	private String accuweatherkey;
 
-	@Value("#{cfg.register}")
+	@Value("#{cfg.proxyurl + cfg.register}")
 	private String register;
 
-	@Value("#{cfg.login}")
+	@Value("#{cfg.proxyurl + cfg.login}")
 	private String login;
 
-	@Value("#{cfg.logout}")
+	@Value("#{cfg.proxyurl + cfg.logout}")
 	private String logout;
 
-	@Value("#{cfg.checkkey}")
+	@Value("#{cfg.proxyurl + cfg.checkkey}")
 	private String checkkey;
 
-	@Value("#{cfg.getlistofbooking}")
+	@Value("#{cfg.proxyurl + cfg.getlistofbooking}")
 	private String getlistofbooking;
 
 	@Override
