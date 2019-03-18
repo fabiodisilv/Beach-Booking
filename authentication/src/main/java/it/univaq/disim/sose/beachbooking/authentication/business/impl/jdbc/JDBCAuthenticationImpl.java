@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import it.univaq.disim.sose.beachbooking.authentication.business.AuthenticationService;
 import it.univaq.disim.sose.beachbooking.authentication.business.BusinessException;
+import it.univaq.disim.sose.beachbooking.authentication.business.model.User;
+import it.univaq.disim.sose.beachbooking.authentication.utils.Utils;
 
 @Service
 public class JDBCAuthenticationImpl implements AuthenticationService {
@@ -24,7 +26,7 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 	private DataSource dataSource;
 
 	@Override
-	public String register(String username, String password) throws BusinessException {
+	public String register(User user) throws BusinessException {
 		String query = "SELECT username FROM users WHERE username = ?";
 
 		Connection connection = null;
@@ -35,28 +37,30 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 			connection = dataSource.getConnection();
 
+			// check if the user is already registered
 			preparedStatement = connection.prepareStatement(query);
 
-			preparedStatement.setString(1, username);
+			preparedStatement.setString(1, user.getUsername());
 
 			resultSet = preparedStatement.executeQuery();
 
 			LOGGER.info("JDBCBeachServiceImpl - register: Executing query");
 
 			if (resultSet.next()) {
-
+				// return an error message
 				return "Error - User already exist!";
 			}
 
 			resultSet.close();
 			preparedStatement.close();
 
+			// insert the user into the DB
 			query = "INSERT INTO users (username, password) VALUES (?,?)";
 
 			preparedStatement = connection.prepareStatement(query);
 
-			preparedStatement.setString(1, username);
-			preparedStatement.setString(2, password);
+			preparedStatement.setString(1, user.getUsername());
+			preparedStatement.setString(2, user.getPassword());
 
 			preparedStatement.executeUpdate();
 
@@ -86,7 +90,7 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 	}
 
 	@Override
-	public String login(String username, String password) throws BusinessException {
+	public String login(User user) throws BusinessException {
 		String query = "SELECT username, password FROM users WHERE username = ? ";
 
 		String passwordDB = null;
@@ -99,9 +103,10 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 			connection = dataSource.getConnection();
 
+			// check if the user is registered
 			preparedStatement = connection.prepareStatement(query);
 
-			preparedStatement.setString(1, username);
+			preparedStatement.setString(1, user.getUsername());
 
 			resultSet = preparedStatement.executeQuery();
 
@@ -117,19 +122,44 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 				return "Error - The user is not registered";
 			}
 
-			if (!passwordDB.equals(password)) {
+			if (!passwordDB.equals(user.getPassword())) {
 				return "Error - Wrong password";
 			}
 
 			resultSet.close();
 			preparedStatement.close();
 
+			// check if there is already a valid key
+			query = "SELECT username FROM authenticated_users WHERE username = ? ";
+
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1, user.getUsername());
+
+			resultSet = preparedStatement.executeQuery();
+
+			// if there is a valid key, delete it
+			if (resultSet.next()) {
+				resultSet.close();
+				preparedStatement.close();
+
+				query = "DELETE FROM authenticated_users WHERE username = ? ";
+
+				preparedStatement = connection.prepareStatement(query);
+				preparedStatement.setString(1, user.getUsername());
+
+				preparedStatement.executeUpdate();
+
+				resultSet.close();
+				preparedStatement.close();
+			}
+
+			// generate and insert a valid key
 			query = "INSERT INTO authenticated_users(username, `key`) VALUES (?,?)";
 
 			preparedStatement = connection.prepareStatement(query);
-			preparedStatement.setString(1, username);
-			
-			key = generateKey();
+			preparedStatement.setString(1, user.getUsername());
+
+			key = Utils.generateKey();
 			preparedStatement.setString(2, key);
 
 			preparedStatement.executeUpdate();
@@ -155,12 +185,13 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 		}
 
+		// return the key
 		return key;
 
 	}
 
 	@Override
-	public Boolean logout(String key) throws BusinessException {
+	public void logout(String key) throws BusinessException {
 		String query = "DELETE FROM authenticated_users WHERE `key` = ?";
 
 		Connection connection = null;
@@ -170,6 +201,7 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 			connection = dataSource.getConnection();
 
+			// delete the record in authenticated_users
 			preparedStatement = connection.prepareStatement(query);
 
 			preparedStatement.setString(1, key);
@@ -200,8 +232,6 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 		}
 
-		return true;
-
 	}
 
 	@Override
@@ -216,6 +246,7 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 
 			connection = dataSource.getConnection();
 
+			// check if the key is valid
 			preparedStatement = connection.prepareStatement(query);
 
 			preparedStatement.setString(1, key);
@@ -225,13 +256,15 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 			LOGGER.info("JDBCBeachServiceImpl - login: Executing query");
 
 			if (resultSet.next()) {
-				
+
+				// return true if the key is in the table authenticated_users
 				return true;
-				
+
 			} else {
-				
+
+				// return false otherwise
 				return false;
-				
+
 			}
 
 		} catch (SQLException e) {
@@ -253,18 +286,6 @@ public class JDBCAuthenticationImpl implements AuthenticationService {
 				}
 			}
 		}
-	}
-
-	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-	private static String generateKey() {
-		int count = 10;
-		StringBuilder builder = new StringBuilder();
-		while (count-- != 0) {
-			int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
-			builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-		}
-		return builder.toString();
 	}
 
 }

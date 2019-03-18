@@ -42,6 +42,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 			connection = dataSource.getConnection();
 
+			// create a list of beaches
 			preparedStatement = connection.prepareStatement(query);
 
 			preparedStatement.setString(1, city);
@@ -102,6 +103,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 			connection = dataSource.getConnection();
 
+			// book a beach and get the generated id
 			preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
 			preparedStatement.setLong(1, beach_id);
@@ -144,7 +146,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 	}
 
 	@Override
-	public Boolean deleteBooking(Long id) throws BusinessException {
+	public void deleteBooking(Long id) throws BusinessException {
 
 		String query = "UPDATE booking SET canceled = 1 WHERE id = ? ";
 
@@ -155,6 +157,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 			connection = dataSource.getConnection();
 
+			// set the canceled flag to 1
 			preparedStatement = connection.prepareStatement(query);
 
 			preparedStatement.setLong(1, id);
@@ -184,16 +187,14 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 		}
 
-		return true;
-
 	}
 
 	@Override
 	public List<Booking> getListOfBooking(String username) throws BusinessException {
-		String query = "SELECT id, beach_id, date, canceled, username FROM booking WHERE username = ? ";
+		String query = "SELECT id, beach_id, date, canceled, username FROM booking WHERE username = ? AND canceled = 0 ";
 
 		List<Booking> bookings = new ArrayList<Booking>();
-		
+
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -202,6 +203,7 @@ public class JDBCBeachServiceImpl implements BeachService {
 
 			connection = dataSource.getConnection();
 
+			// get the list of booking per username
 			preparedStatement = connection.prepareStatement(query);
 
 			preparedStatement.setString(1, username);
@@ -213,13 +215,13 @@ public class JDBCBeachServiceImpl implements BeachService {
 			while (resultSet.next()) {
 
 				Booking booking = new Booking();
-				
+
 				booking.setId(resultSet.getLong("id"));
 				booking.setBeachId(resultSet.getLong("beach_id"));
 				booking.setDate(resultSet.getDate("date"));
 				booking.setCanceled(resultSet.getBoolean("canceled"));
 				booking.setUsername(resultSet.getString("username"));
-				
+
 				bookings.add(booking);
 			}
 

@@ -6,15 +6,16 @@ import java.util.List;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Parking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.User;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
 
 public interface BeachBookingService {
 	
-	String register(String username, String password) throws BusinessException;
+	String register(User user) throws BusinessException;
 
-	String login(String username, String password) throws BusinessException;
+	String login(User user) throws BusinessException;
 
-	Boolean logout(String key) throws BusinessException;
+	void logout(String key) throws BusinessException;
 	
 	Boolean checkKey(String key) throws BusinessException;
 

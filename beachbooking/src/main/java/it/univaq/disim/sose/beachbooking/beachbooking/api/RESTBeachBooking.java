@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,6 +24,7 @@ import it.univaq.disim.sose.beachbooking.beachbooking.business.BeachBookingServi
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.BeachParkingWeather;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.User;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
 
 @Controller("beachbookingrestcontroller")
@@ -34,17 +36,18 @@ public class RESTBeachBooking {
 	private BeachBookingService service;
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("getbeaches/{key}/{city}")
 	public BeachParkingWeather getbeaches(@PathParam("key") String key, @PathParam("city") String city) {
 
 		LOGGER.info("CALLED getbeahes ON beachbookingrestcontroller");
 
+		// check if the key is valid before executing
 		Boolean validKey = service.checkKey(key);
 
 		if (validKey) {
 
+			// parallel execution of 2 services
 			ExecutorService executor = Executors.newFixedThreadPool(2);
 
 			Callable<List<Beach>> callableBeach = new Callable<List<Beach>>() {
@@ -109,7 +112,6 @@ public class RESTBeachBooking {
 	}
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("bookbeach/{key}/{id}/{date}/{username}")
 	public Booking bookbeach(@PathParam("key") String key, @PathParam("id") Long id, @PathParam("date") Date date,
@@ -117,6 +119,7 @@ public class RESTBeachBooking {
 
 		LOGGER.info("CALLED bookbeach ON beachbookingrestcontroller");
 
+		// check if the key is valid before executing
 		Boolean validKey = service.checkKey(key);
 
 		if (validKey) {
@@ -129,15 +132,15 @@ public class RESTBeachBooking {
 
 		}
 	}
-	
+
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("getlistofbooking/{key}/{username}")
 	public List<Booking> getlistofbooking(@PathParam("key") String key, @PathParam("username") String username) {
 
 		LOGGER.info("CALLED getlistofbooking ON beachbookingrestcontroller");
 
+		// check if the key is valid before executing
 		Boolean validKey = service.checkKey(key);
 
 		if (validKey) {
@@ -151,36 +154,32 @@ public class RESTBeachBooking {
 		}
 	}
 
-
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("deletebooking/{key}/{id}")
-	public Boolean deletebooking(@PathParam("key") String key, @PathParam("id") Long id) {
+	public void deletebooking(@PathParam("key") String key, @PathParam("id") Long id) {
 
 		LOGGER.info("CALLED deletebooking ON beachbookingrestcontroller");
 
+		// check if the key is valid before executing
 		Boolean validKey = service.checkKey(key);
 
 		if (validKey) {
 
-			return service.deleteBooking(id);
-
-		} else {
-
-			return null;
+			service.deleteBooking(id);
 
 		}
+		
 	}
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("getforecast/{key}/{city}")
 	public Forecast getforecast(@PathParam("key") String key, @PathParam("city") String city) {
 
 		LOGGER.info("CALLED getforecast ON beachbookingrestcontroller");
 
+		// check if the key is valid before executing
 		Boolean validKey = service.checkKey(key);
 
 		if (validKey) {
@@ -194,38 +193,40 @@ public class RESTBeachBooking {
 		}
 	}
 
-	@GET
+	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("register/{username}/{password}")
-	public String register(@PathParam("username") String username, @PathParam("password") String password) {
+	@Path("register")
+	public String register(User user) {
 
 		LOGGER.info("CALLED register ON beachbookingrestcontroller");
 
-		return service.register(username, password);
+		//call register service
+		return service.register(user);
 
 	}
 
-	@GET
+	@POST
 	@Consumes("application/json")
 	@Produces("application/json")
-	@Path("login/{username}/{password}")
-	public String login(@PathParam("username") String username, @PathParam("password") String password) {
+	@Path("login")
+	public String login(User user) {
 
 		LOGGER.info("CALLED login ON beachbookingrestcontroller");
 
-		return service.login(username, password);
+		//call login service
+		return service.login(user);
 
 	}
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("logout/{key}")
-	public Boolean logout(@PathParam("key") String key) {
+	public void logout(@PathParam("key") String key) {
 
 		LOGGER.info("CALLED logout ON beachbookingrestcontroller");
 
-		return service.logout(key);
+		//call logout service
+		service.logout(key);
 	}
 }

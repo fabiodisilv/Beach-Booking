@@ -6,9 +6,12 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import it.univaq.disim.sose.beachbooking.beachbooking.business.BusinessException
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Beach;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Booking;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.Parking;
+import it.univaq.disim.sose.beachbooking.beachbooking.model.User;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.forecast.Forecast;
 import it.univaq.disim.sose.beachbooking.beachbooking.model.accuweather.location.Location;
 import it.univaq.disim.sose.beachbooking.clients.beachbooking.GetNearParkingsRequest;
@@ -30,7 +34,7 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 
 	@Value("#{cfg.proxyurl}")
 	private String proxyUrl;
-	
+
 	@Value("#{cfg.proxyurl + cfg.getbeachesurl}")
 	private String getbeachurl;
 
@@ -40,13 +44,13 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 	@Value("#{cfg.proxyurl + cfg.deletebookingurl}")
 	private String deletebookingurl;
 
-	@Value("#{cfg.proxyurl + cfg.getforecasturl}")
+	@Value("#{cfg.getforecasturl}")
 	private String getforecasturl;
 
-	@Value("#{cfg.proxyurl + cfg.getlocationkeyurl}")
+	@Value("#{cfg.getlocationkeyurl}")
 	private String getlocationkeyurl;
 
-	@Value("#{cfg.proxyurl + cfg.accuweatherkey}")
+	@Value("#{cfg.accuweatherkey}")
 	private String accuweatherkey;
 
 	@Value("#{cfg.proxyurl + cfg.register}")
@@ -157,41 +161,40 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 	}
 
 	@Override
-	public String register(String username, String password) throws BusinessException {
+	public String register(User user) throws BusinessException {
 		final String mediaType = MediaType.APPLICATION_JSON;
 
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(register);
-		String result = target.resolveTemplate("username", username).resolveTemplate("password", password)
-				.request(mediaType).get(new GenericType<String>() {
-				});
+		Response response = target.request(mediaType).post(Entity.entity(user, mediaType));
 
+		String result = response.readEntity(String.class);
+		
 		return result;
 	}
 
 	@Override
-	public String login(String username, String password) throws BusinessException {
+	public String login(User user) throws BusinessException {
 		final String mediaType = MediaType.APPLICATION_JSON;
 
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(login);
-		String key = target.resolveTemplate("username", username).resolveTemplate("password", password)
-				.request(mediaType).get(new GenericType<String>() {
-				});
+		Response response = target.request(mediaType).post(Entity.entity(user, mediaType));
 
+		String key = response.readEntity(String.class);
+		
 		return key;
 	}
 
 	@Override
-	public Boolean logout(String key) throws BusinessException {
+	public void logout(String key) throws BusinessException {
 		final String mediaType = MediaType.APPLICATION_JSON;
 
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(logout);
-		Boolean result = target.resolveTemplate("key", key).request(mediaType).get(new GenericType<Boolean>() {
+		target.resolveTemplate("key", key).request(mediaType).get(new GenericType<Boolean>() {
 		});
 
-		return result;
 	}
 
 	@Override
@@ -200,7 +203,9 @@ public class BeachBookingServiceImpl implements BeachBookingService, java.io.Ser
 
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(checkkey);
-		Boolean result = target.resolveTemplate("key", key).request(mediaType).get(new GenericType<Boolean>() {
+		Boolean result = target.resolveTemplate("key", key)
+				.request(mediaType)
+				.get(new GenericType<Boolean>() {
 		});
 
 		return result;

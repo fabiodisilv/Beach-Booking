@@ -7,12 +7,16 @@
 	<artifactId>client</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
 
 	<name>client</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
+		<cxf.version>3.2.7</cxf.version>
+		<cxf.xjc-utils.version>3.2.3</cxf.xjc-utils.version>
+		<spring.version>4.3.20.RELEASE</spring.version>
+		<jackson.version>2.9.7</jackson.version>
+		<jersey.version>2.27</jersey.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -23,10 +27,28 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>client</finalName>
 	</build>
-	
+
 </project>

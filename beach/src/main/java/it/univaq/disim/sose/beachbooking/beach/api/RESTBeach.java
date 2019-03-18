@@ -3,7 +3,6 @@ package it.univaq.disim.sose.beachbooking.beach.api;
 import java.sql.Date;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,17 +26,16 @@ public class RESTBeach {
 	private BeachService service;
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("getbeaches/{city}")
 	public List<Beach> getbeaches(@PathParam("city") String city) {
 
 		LOGGER.info("CALLED getbeaches ON beachrestcontroller");
+		//get the list of the beaches in the city
 		return service.getBeaches(city);
 	}
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("bookbeach/{beach_id}/{date}/{username}")
 	public Booking bookbeach(@PathParam("beach_id") Long beachId, @PathParam("date") Date date,
@@ -45,6 +43,7 @@ public class RESTBeach {
 
 		LOGGER.info("CALLED bookbeach ON beachrestcontroller");
 
+		//book a beach
 		Booking booking = new Booking();
 
 		booking.setBeachId(beachId);
@@ -57,24 +56,23 @@ public class RESTBeach {
 	}
 
 	@GET
-	@Consumes("application/json")
-	@Produces("application/json")
 	@Path("deletebooking/{id}")
-	public Boolean deletebooking(@PathParam("id") Long id) {
+	public void deletebooking(@PathParam("id") Long id) {
 
 		LOGGER.info("CALLED deletebooking ON beachrestcontroller");
 
-		return service.deleteBooking(id);
+		//delete a booking
+		service.deleteBooking(id);
 	}
 
 	@GET
-	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("getlistofbooking/{username}")
 	public List<Booking> getlistofbooking(@PathParam("username") String username) {
 
 		LOGGER.info("CALLED bookbeach ON beachrestcontroller");
 
+		//get the list of booking per user
 		return service.getListOfBooking(username);
 
 	}

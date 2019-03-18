@@ -40,6 +40,7 @@ public class JDBCParkingServiceImpl implements ParkingService {
 
 			connection = dataSource.getConnection();
 
+			//get list of parkings per zone
 			preparedStatement = connection.prepareStatement(query);
 
 			preparedStatement.setInt(1, zone);

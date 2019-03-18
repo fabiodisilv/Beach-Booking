@@ -1,12 +1,13 @@
 package it.univaq.disim.sose.beachbooking.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+import it.univaq.disim.sose.beachbooking.client.model.User;
 import it.univaq.disim.sose.beachbooking.client.utils.Utils;
 
 public class Register {
@@ -17,36 +18,21 @@ public class Register {
 		String password = "password";
 		String prosumerUrl = Utils.getProsumerUrl();
 
-		try {
+		final String mediaType = MediaType.APPLICATION_JSON;
 
-			URL url = new URL(prosumerUrl + "register/" + username + "/" + password + "");
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setRequestProperty("Accept", "application/json");
+		Client client = ClientBuilder.newClient();
+		WebTarget target = client.target(prosumerUrl + "register");
 
-			if (conn.getResponseCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-			}
+		User user = new User();
 
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+		user.setUsername(username);
+		user.setPassword(password);
 
-			String output;
-			// System.out.println("Output from Server .... \n");
-			while ((output = br.readLine()) != null) {
-				System.out.println(output);
-			}
+		Response response = target.request(mediaType).post(Entity.entity(user, mediaType));
 
-			conn.disconnect();
+		String output = response.readEntity(String.class);
 
-		} catch (MalformedURLException e) {
-
-			e.printStackTrace();
-
-		} catch (IOException e) {
-
-			e.printStackTrace();
-
-		}
+		System.out.println(output);
 
 	}
 

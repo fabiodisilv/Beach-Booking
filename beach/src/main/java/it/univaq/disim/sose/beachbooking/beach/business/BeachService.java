@@ -12,7 +12,7 @@ public interface BeachService {
 	
 	Long bookBeach(Long beach_id, Date date, String username) throws BusinessException;
 
-	Boolean deleteBooking(Long id) throws BusinessException;
+	void deleteBooking(Long id) throws BusinessException;
 	
 	List<Booking> getListOfBooking(String username) throws BusinessException;
 }

@@ -1,12 +1,14 @@
 package it.univaq.disim.sose.beachbooking.authentication.business;
 
+import it.univaq.disim.sose.beachbooking.authentication.business.model.User;
+
 public interface AuthenticationService {
 
-	String register(String username, String password) throws BusinessException;
+	String register(User user) throws BusinessException;
 
-	String login(String username, String password) throws BusinessException;
+	String login(User user) throws BusinessException;
 
-	Boolean logout(String key) throws BusinessException;
+	void logout(String key) throws BusinessException;
 
 	Boolean checkKey(String key) throws BusinessException;
 
